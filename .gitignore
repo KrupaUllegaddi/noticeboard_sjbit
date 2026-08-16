@@ -1,0 +1,19 @@
+# Dependencies — huge, and can be recreated anytime with "npm install"
+node_modules/
+
+# Secrets — your group ID, port config, etc.
+.env
+
+# WhatsApp login session — deeply sensitive, this is essentially
+# your logged-in WhatsApp session sitting on disk
+baileys_auth/
+
+# The actual notice board data — REAL student marks/PDFs live here.
+# This must never be public.
+data/
+downloads/
+
+# Old files from earlier versions of this project (safe to remove
+# this line if you've already deleted these for good)
+.wwebjs_auth/
+.wwebjs_cache/
