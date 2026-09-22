@@ -14,7 +14,9 @@ function renderNotice(notice) {
   const time = new Date(notice.timestamp).toLocaleString();
   let mediaHtml = '';
 
-  if (notice.mimetype.startsWith('image/')) {
+  if (notice.mimetype === 'text/plain') {
+  mediaHtml = `<div class="text-notice">${notice.caption}</div>`;
+} else if (notice.mimetype.startsWith('image/')) {
     mediaHtml = `<img src="/downloads/${notice.filename}" alt="notice image" />`;
   } else if (notice.mimetype === 'application/pdf') {
     // #toolbar=0 hides the download/print bar, #navpanes=0 hides the
@@ -26,16 +28,26 @@ function renderNotice(notice) {
   el.innerHTML = `
     <button class="close-btn" title="Remove this notice">&times;</button>
     <div class="meta">${notice.sender} &middot; ${time}</div>
-    ${notice.caption ? `<div class="caption">${notice.caption}</div>` : ''}
+    ${notice.caption && notice.mimetype !== 'text/plain' ? `<div class="caption">${notice.caption}</div>` : ''}You 
     ${mediaHtml}
   `;
 
   // Clicking the close button deletes it from the server, which then
   // tells every open tab (via 'removeNotice') to remove it visually.
-  el.querySelector('.close-btn').addEventListener('click', () => {
-    fetch(`/api/notices/${notice.id}`, { method: 'DELETE' }).catch((err) =>
-      console.error('Failed to delete notice:', err)
-    );
+ el.querySelector('.close-btn').addEventListener('click', () => {
+    const password = prompt('Enter admin password to remove this notice:');
+    if (password === null) return; // user clicked Cancel
+
+    fetch(`/api/notices/${notice.id}`, {
+      method: 'DELETE',
+      headers: { 'X-Admin-Password': password },
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          alert('Incorrect password — notice was not removed.');
+        }
+      })
+      .catch((err) => console.error('Failed to delete notice:', err));
   });
 
   // Newest notice appears first

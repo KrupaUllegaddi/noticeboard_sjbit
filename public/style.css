@@ -80,3 +80,9 @@ main {
   border-radius: 6px;
   background: white;
 }
+.notice .text-notice {
+  font-size: 20px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  padding: 10px 0;
+}
